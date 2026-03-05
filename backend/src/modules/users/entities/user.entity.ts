@@ -1,4 +1,7 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
+import { Account } from '../../accounts/entities/account.entity';
+import { Shop } from '../../shops/entities/shop.entity';
+import { Category } from '../../categories/entities/category.entity';
 
 @Entity('users')
 export class User {
@@ -25,4 +28,14 @@ export class User {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  // 关联
+  @OneToMany(() => Account, account => account.user)
+  accounts: Account[];
+
+  @OneToMany(() => Shop, shop => shop.user)
+  shops: Shop[];
+
+  @OneToMany(() => Category, category => category.user)
+  categories: Category[];
 }
