@@ -2,6 +2,7 @@ import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateCol
 import { Account } from '../../accounts/entities/account.entity';
 import { Shop } from '../../shops/entities/shop.entity';
 import { Category } from '../../categories/entities/category.entity';
+import { Attachment } from '../../attachments/entities/attachment.entity';
 
 @Entity('users')
 export class User {
@@ -38,4 +39,7 @@ export class User {
 
   @OneToMany(() => Category, category => category.user)
   categories: Category[];
+
+  @OneToMany(() => Attachment, attachment => attachment.user)
+  attachments: Attachment[];
 }

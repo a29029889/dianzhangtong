@@ -1,18 +1,58 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Query, UseGuards, Request, ParseUUIDPipe } from '@nestjs/common';
 import { AccountsService } from './accounts.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { CreateAccountDto, UpdateAccountDto } from './dto/account.dto';
+import { CreateAccountDto, UpdateAccountDto, QueryAccountDto } from './dto/account.dto';
+import { AccountType } from './entities/account.entity';
 
 @Controller('accounts')
 @UseGuards(JwtAuthGuard)
 export class AccountsController {
   constructor(private accountsService: AccountsService) {}
 
+  // 分页筛选查询
   @Get()
-  findAll(@Request() req) {
-    return this.accountsService.findAll(req.user.userId);
+  findAll(@Request() req, @Query() query: QueryAccountDto) {
+    return this.accountsService.findAllPaginated(req.user.userId, query);
   }
 
+  // 快捷统计（今日/本周/本月）
+  @Get('quick-stats')
+  getQuickStats(@Request() req) {
+    return this.accountsService.getQuickStats(req.user.userId);
+  }
+
+  // 余额统计
+  @Get('balance')
+  getBalance(
+    @Request() req,
+    @Query('endDate') endDate: string,
+  ) {
+    return this.accountsService.getBalance(req.user.userId, endDate);
+  }
+
+  // 趋势分析（日/周/月）
+  @Get('trend')
+  getTrend(
+    @Request() req,
+    @Query('startDate') startDate: string,
+    @Query('endDate') endDate: string,
+    @Query('period') period: 'day' | 'week' | 'month' = 'day',
+  ) {
+    return this.accountsService.getTrendByPeriod(req.user.userId, startDate, endDate, period);
+  }
+
+  // 分类占比统计
+  @Get('category-breakdown')
+  getCategoryBreakdown(
+    @Request() req,
+    @Query('startDate') startDate: string,
+    @Query('endDate') endDate: string,
+    @Query('type') type?: AccountType,
+  ) {
+    return this.accountsService.getCategoryBreakdown(req.user.userId, startDate, endDate, type);
+  }
+
+  // 基础统计（兼容旧版）
   @Get('statistics')
   getStatistics(
     @Request() req,
@@ -23,7 +63,7 @@ export class AccountsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string, @Request() req) {
+  findOne(@Param('id', ParseUUIDPipe) id: string, @Request() req) {
     return this.accountsService.findById(id, req.user.userId);
   }
 
@@ -34,7 +74,7 @@ export class AccountsController {
 
   @Put(':id')
   update(
-    @Param('id') id: string,
+    @Param('id', ParseUUIDPipe) id: string,
     @Body() updateAccountDto: UpdateAccountDto,
     @Request() req,
   ) {
@@ -42,7 +82,7 @@ export class AccountsController {
   }
 
   @Delete(':id')
-  delete(@Param('id') id: string, @Request() req) {
+  delete(@Param('id', ParseUUIDPipe) id: string, @Request() req) {
     return this.accountsService.delete(id, req.user.userId);
   }
 }
