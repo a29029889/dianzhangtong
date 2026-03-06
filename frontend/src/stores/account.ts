@@ -38,6 +38,14 @@ export interface CategoryBreakdown {
   percentage: number;
 }
 
+export interface PaginatedResponse<T> {
+  data: T[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
 export const useAccountStore = defineStore('account', () => {
   const accounts = ref<Account[]>([]);
   const quickStats = ref<QuickStats | null>(null);
@@ -52,8 +60,8 @@ export const useAccountStore = defineStore('account', () => {
   async function fetchQuickStats() {
     try {
       const res = await api.get('/accounts/quick-stats');
-      quickStats.value = res.data;
-      return { success: true, data: res.data };
+      quickStats.value = res;
+      return { success: true, data: res };
     } catch (error) {
       return { success: false, message: '获取统计失败' };
     }
@@ -71,11 +79,11 @@ export const useAccountStore = defineStore('account', () => {
   }) {
     loading.value = true;
     try {
-      const res = await api.get('/accounts', { params });
-      accounts.value = res.data.data || [];
-      total.value = res.data.total || 0;
-      page.value = res.data.page || 1;
-      return { success: true, data: res.data };
+      const res = await api.get('/accounts', { params }) as PaginatedResponse<Account>;
+      accounts.value = res.data || [];
+      total.value = res.total || 0;
+      page.value = res.page || 1;
+      return { success: true, data: res };
     } catch (error) {
       return { success: false, message: '获取流水失败' };
     } finally {
@@ -94,7 +102,7 @@ export const useAccountStore = defineStore('account', () => {
   }) {
     try {
       const res = await api.post('/accounts', data);
-      return { success: true, data: res.data };
+      return { success: true, data: res };
     } catch (error: any) {
       return { success: false, message: error.message || '创建失败' };
     }
@@ -111,7 +119,7 @@ export const useAccountStore = defineStore('account', () => {
   }>) {
     try {
       const res = await api.put(`/accounts/${id}`, data);
-      return { success: true, data: res.data };
+      return { success: true, data: res };
     } catch (error: any) {
       return { success: false, message: error.message || '更新失败' };
     }
@@ -133,8 +141,8 @@ export const useAccountStore = defineStore('account', () => {
       const res = await api.get('/accounts/trend', {
         params: { startDate, endDate, period }
       });
-      trendData.value = res.data || [];
-      return { success: true, data: res.data };
+      trendData.value = res || [];
+      return { success: true, data: res };
     } catch (error) {
       return { success: false, message: '获取趋势失败' };
     }
@@ -146,8 +154,8 @@ export const useAccountStore = defineStore('account', () => {
       const res = await api.get('/accounts/category-breakdown', {
         params: { startDate, endDate, type }
       });
-      categoryBreakdown.value = res.data || [];
-      return { success: true, data: res.data };
+      categoryBreakdown.value = res || [];
+      return { success: true, data: res };
     } catch (error) {
       return { success: false, message: '获取分类统计失败' };
     }
@@ -159,7 +167,7 @@ export const useAccountStore = defineStore('account', () => {
       const res = await api.get('/accounts/balance', {
         params: { endDate }
       });
-      return { success: true, data: res.data };
+      return { success: true, data: res };
     } catch (error) {
       return { success: false, message: '获取余额失败' };
     }

@@ -311,4 +311,102 @@ export class AccountsService {
       month: calculateStats(monthAccounts),
     };
   }
+
+  // 导出所有数据
+  async exportAll(userId: string): Promise<any[]> {
+    const accounts = await this.accountsRepository.find({
+      where: { userId },
+      relations: ['category', 'shop'],
+      order: { date: 'DESC' },
+    });
+
+    return accounts.map(account => ({
+      date: new Date(account.date).toISOString().split('T')[0],
+      type: account.type,
+      amount: account.amount,
+      categoryName: account.category?.name || '',
+      shopName: account.shop?.name || '',
+      description: account.description || '',
+    }));
+  }
+
+  // 导入数据
+  async importData(userId: string, filePath: string): Promise<{ success: boolean; message: string; count?: number }> {
+    try {
+      const fs = require('fs');
+      const csv = require('csv-parse/sync');
+      
+      const fileContent = fs.readFileSync(filePath, 'utf-8');
+      const records = csv.parse(fileContent, {
+        columns: true,
+        skip_empty_lines: true,
+        trim: true,
+      });
+
+      if (records.length === 0) {
+        return { success: false, message: '文件中没有数据' };
+      }
+
+      let successCount = 0;
+      for (const record of records) {
+        try {
+          const typeStr = record['类型'] === '收入' ? AccountType.INCOME : AccountType.EXPENSE;
+          const amount = parseFloat(record['金额']);
+          
+          if (isNaN(amount)) {
+            continue;
+          }
+
+          // 查找或创建分类
+          let categoryId: string | null = null;
+          if (record['分类']) {
+            const category = await this.accountsRepository.manager
+              .createQueryBuilder('category', 'category')
+              .where('category.userId = :userId', { userId })
+              .andWhere('category.name = :name', { name: record['分类'] })
+              .getOne();
+            categoryId = category?.id || null;
+          }
+
+          // 查找或创建店铺
+          let shopId: string | null = null;
+          if (record['店铺']) {
+            const shop = await this.accountsRepository.manager
+              .createQueryBuilder('shop', 'shop')
+              .where('shop.userId = :userId', { userId })
+              .andWhere('shop.name = :name', { name: record['店铺'] })
+              .getOne();
+            shopId = shop?.id || null;
+          }
+
+          const account = this.accountsRepository.create({
+            userId,
+            type: typeStr,
+            amount,
+            date: new Date(record['日期'] || new Date().toISOString().split('T')[0]),
+            categoryId,
+            shopId,
+            description: record['备注'] || '',
+          });
+
+          await this.accountsRepository.save(account);
+          successCount++;
+        } catch (e) {
+          console.error('导入单条记录失败:', e);
+        }
+      }
+
+      // 删除上传的临时文件
+      fs.unlinkSync(filePath);
+
+      return { 
+        success: true, 
+        message: `成功导入 ${successCount} 条数据`, 
+        count: successCount 
+      };
+    } catch (error) {
+      console.error('导入数据失败:', error);
+      return { success: false, message: '导入失败: ' + (error as Error).message };
+    }
+  }
 }

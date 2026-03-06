@@ -8,6 +8,7 @@ import { ShopsModule } from './modules/shops/shops.module';
 import { CategoriesModule } from './modules/categories/categories.module';
 import { InventoryModule } from './modules/inventory/inventory.module';
 import { AttachmentsModule } from './modules/attachments/attachments.module';
+import { NotificationModule } from './modules/notification/notification.module';
 
 @Module({
   imports: [
@@ -29,7 +30,7 @@ import { AttachmentsModule } from './modules/attachments/attachments.module';
         password: configService.get('DB_PASSWORD', 'postgres'),
         database: configService.get('DB_DATABASE', 'dianzhangtong'),
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
-        synchronize: configService.get('NODE_ENV') !== 'production',
+        synchronize: true,
         logging: configService.get('NODE_ENV') === 'development',
       }),
     }),
@@ -42,6 +43,7 @@ import { AttachmentsModule } from './modules/attachments/attachments.module';
     CategoriesModule,
     InventoryModule,
     AttachmentsModule,
+    NotificationModule,
   ],
 })
 export class AppModule {}

@@ -1,17 +1,24 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import { join } from 'path';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
   
   // 全局前缀
   app.setGlobalPrefix('api');
   
   // 启用 CORS
   app.enableCors({
-    origin: ['http://localhost:3000', 'http://localhost:8080'],
+    origin: '*',
     credentials: true,
+  });
+  
+  // 静态文件服务 - 上传的文件
+  app.useStaticAssets(join(__dirname, '..', 'uploads'), {
+    prefix: '/uploads',
   });
   
   // 全局验证管道

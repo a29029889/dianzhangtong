@@ -20,6 +20,9 @@ export class Product {
   @Column({ type: 'int', default: 0 })
   stock: number;
 
+  @Column({ type: 'int', default: 10 })
+  lowStockThreshold: number;
+
   @Column({ nullable: true })
   category: string;
 

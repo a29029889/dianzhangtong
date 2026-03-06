@@ -11,10 +11,11 @@ export const useAuthStore = defineStore('auth', () => {
   async function login(username: string, password: string) {
     try {
       const res = await api.post('/auth/login', { username, password });
-      if (res.data?.access_token) {
-        token.value = res.data.access_token;
-        uni.setStorageSync('token', res.data.access_token);
-        uni.setStorageSync('userId', res.data.userId);
+      // API已经返回了res.data，所以这里直接用res获取access_token
+      if (res.access_token) {
+        token.value = res.access_token;
+        uni.setStorageSync('token', res.access_token);
+        uni.setStorageSync('userId', res.user?.id);
         return { success: true };
       }
       return { success: false, message: '登录失败' };
@@ -27,7 +28,8 @@ export const useAuthStore = defineStore('auth', () => {
   async function register(username: string, password: string) {
     try {
       const res = await api.post('/auth/register', { username, password });
-      return { success: true, data: res.data };
+      // API已经返回了res.data，所以这里直接用res
+      return { success: true, data: res };
     } catch (error: any) {
       return { success: false, message: error.message || '注册失败' };
     }
@@ -45,8 +47,9 @@ export const useAuthStore = defineStore('auth', () => {
   async function getUserInfo() {
     try {
       const res = await api.get('/users/profile');
-      userInfo.value = res.data;
-      return { success: true, data: res.data };
+      // API已经返回了res.data，所以这里直接用res
+      userInfo.value = res;
+      return { success: true, data: res };
     } catch (error) {
       return { success: false, message: '获取用户信息失败' };
     }

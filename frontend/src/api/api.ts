@@ -1,6 +1,6 @@
 import { useAuthStore } from '../stores/auth';
 
-const baseURL = 'http://localhost:3000/api';
+const baseURL = '/api';
 
 interface RequestOptions {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE';

@@ -25,6 +25,21 @@ export class InventoryController {
     return this.inventoryService.updateStock(id, body.stock);
   }
 
+  @Put(':id/threshold')
+  async updateThreshold(@Param('id') id: string, @Body() body: { lowStockThreshold: number }) {
+    return this.inventoryService.updateLowStockThreshold(id, body.lowStockThreshold);
+  }
+
+  @Get('low-stock')
+  async getLowStock(@Request() req) {
+    return this.inventoryService.getLowStockProducts(req.user.userId);
+  }
+
+  @Get('low-stock/stats')
+  async getLowStockStats(@Request() req) {
+    return this.inventoryService.getLowStockStats(req.user.userId);
+  }
+
   @Delete(':id')
   async delete(@Param('id') id: string) {
     return this.inventoryService.delete(id);

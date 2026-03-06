@@ -41,6 +41,34 @@
         "navigationBarTitleText": "我的",
         "navigationStyle": "custom"
       }
+    },
+    {
+      "path": "pages/shops/shops",
+      "style": {
+        "navigationBarTitleText": "店铺管理",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/categories/categories",
+      "style": {
+        "navigationBarTitleText": "分类管理",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/settings/settings",
+      "style": {
+        "navigationBarTitleText": "通知设置",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/inventory/inventory",
+      "style": {
+        "navigationBarTitleText": "库存预警",
+        "navigationStyle": "custom"
+      }
     }
   ],
   "globalStyle": {

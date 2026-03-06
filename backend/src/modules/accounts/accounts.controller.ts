@@ -1,8 +1,11 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query, UseGuards, Request, ParseUUIDPipe } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Query, UseGuards, Request, ParseUUIDPipe, Res, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { AccountsService } from './accounts.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CreateAccountDto, UpdateAccountDto, QueryAccountDto } from './dto/account.dto';
 import { AccountType } from './entities/account.entity';
+import { Response } from 'express';
+import { diskStorage } from 'multer';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('accounts')
 @UseGuards(JwtAuthGuard)
@@ -60,6 +63,54 @@ export class AccountsController {
     @Query('endDate') endDate: string,
   ) {
     return this.accountsService.getStatistics(req.user.userId, startDate, endDate);
+  }
+
+  // 导出数据
+  @Get('export')
+  async exportData(@Request() req, @Res() res: Response) {
+    const data = await this.accountsService.exportAll(req.user.userId);
+    
+    // 设置 CSV 响应头
+    res.setHeader('Content-Type', 'text/csv;charset=utf-8');
+    res.setHeader('Content-Disposition', `attachment; filename=dianzhangtong_export_${Date.now()}.csv`);
+    
+    // 转换为 CSV
+    const headers = ['日期', '类型', '金额', '分类', '店铺', '备注'];
+    const csvRows = [headers.join(',')];
+    
+    data.forEach(item => {
+      const row = [
+        item.date,
+        item.type === 'income' ? '收入' : '支出',
+        item.amount,
+        item.categoryName || '',
+        item.shopName || '',
+        (item.description || '').replace(/,/g, '，')
+      ];
+      csvRows.push(row.join(','));
+    });
+    
+    // 添加 BOM 以支持中文
+    res.send('\ufeff' + csvRows.join('\n'));
+  }
+
+  // 导入数据
+  @Post('import')
+  @UseInterceptors(FileInterceptor('file', {
+    storage: diskStorage({
+      destination: './uploads',
+      filename: (req, file, cb) => {
+        cb(null, `${Date.now()}_${file.originalname}`);
+      }
+    })
+  }))
+  async importData(@UploadedFile() file: Express.Multer.File, @Request() req) {
+    if (!file) {
+      return { success: false, message: '请上传文件' };
+    }
+    
+    const result = await this.accountsService.importData(req.user.userId, file.path);
+    return result;
   }
 
   @Get(':id')

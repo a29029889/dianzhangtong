@@ -15,6 +15,10 @@
       "handle": "filesystem"
     },
     {
+      "src": "/api/(.*)",
+      "dest": "http://119.28.149.26/api/$1"
+    },
+    {
       "src": "/(.*)",
       "dest": "/index.html"
     }

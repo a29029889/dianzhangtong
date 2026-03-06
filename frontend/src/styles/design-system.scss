@@ -1,0 +1,283 @@
+/* ========================================
+   店账通 - 现代记账App设计规范
+   设计风格：简洁、温暖、专业
+   ======================================== */
+
+/* ---------- 颜色系统 ---------- */
+
+// 主色渐变 (温暖活泼的橙紫渐变)
+$primary-gradient: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+$primary-gradient-dark: linear-gradient(135deg, #FF8E53 0%, #FF6B6B 100%);
+
+// 功能色
+$color-income: #52C41A;      // 收入绿色
+$color-expense: #FF4D4F;     // 支出红色
+$color-warning: #FAAD14;    // 警告黄色
+$color-info: #1890FF;       // 信息蓝色
+
+// 中性色
+$color-primary: #FF6B6B;    // 主色(珊瑚橙)
+$color-primary-light: #FF8E53;
+$color-primary-dark: #EE5A5A;
+
+$color-text: #1A1A1A;       // 主要文字
+$color-text-secondary: #666666;  // 次要文字
+$color-text-muted: #999999;      // 弱化文字
+$color-text-placeholder: #BBBBBB; // 占位符
+
+$color-bg: #F7F8FA;         // 页面背景
+$color-bg-card: #FFFFFF;    // 卡片背景
+$color-bg-dark: #F0F2F5;    // 深色背景区域
+
+$color-border: #EEEEEE;     // 边框色
+$color-border-light: #F5F5F5;
+
+// 阴影
+$shadow-sm: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
+$shadow-md: 0 4rpx 16rpx rgba(0, 0, 0, 0.08);
+$shadow-lg: 0 8rpx 32rpx rgba(0, 0, 0, 0.12);
+$shadow-card: 0 2rpx 12rpx rgba(255, 107, 107, 0.08);
+
+// 圆角
+$radius-sm: 8rpx;
+$radius-md: 12rpx;
+$radius-lg: 16rpx;
+$radius-xl: 20rpx;
+$radius-full: 9999rpx;
+
+/* ---------- 字体系统 ---------- */
+
+$font-size-xs: 22rpx;
+$font-size-sm: 24rpx;
+$font-size-base: 28rpx;
+$font-size-md: 30rpx;
+$font-size-lg: 32rpx;
+$font-size-xl: 36rpx;
+$font-size-2xl: 40rpx;
+$font-size-3xl: 48rpx;
+$font-size-4xl: 56rpx;
+$font-size-hero: 72rpx;
+
+$font-weight-regular: 400;
+$font-weight-medium: 500;
+$font-weight-semibold: 600;
+$font-weight-bold: 700;
+
+/* ---------- 间距系统 ---------- */
+
+$spacing-xs: 8rpx;
+$spacing-sm: 12rpx;
+$spacing-md: 16rpx;
+$spacing-lg: 20rpx;
+$spacing-xl: 24rpx;
+$spacing-2xl: 30rpx;
+$spacing-3xl: 40rpx;
+$spacing-4xl: 50rpx;
+
+/* ---------- 动画 ---------- */
+
+$transition-fast: 0.15s ease;
+$transition-base: 0.25s ease;
+$transition-slow: 0.35s ease;
+
+/* ---------- 全局样式 ---------- */
+
+page {
+  background-color: $color-bg;
+  font-size: $font-size-base;
+  color: $color-text;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 通用卡片 */
+.card {
+  background: $color-bg-card;
+  border-radius: $radius-xl;
+  padding: $spacing-xl;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-lg;
+}
+
+/* 通用按钮 */
+.btn {
+  border-radius: $radius-full;
+  padding: $spacing-lg $spacing-2xl;
+  text-align: center;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  transition: all $transition-base;
+  
+  &:active {
+    transform: scale(0.98);
+    opacity: 0.9;
+  }
+}
+
+.btn-primary {
+  @extend .btn;
+  background: $primary-gradient;
+  color: #fff;
+  box-shadow: 0 8rpx 20rpx rgba(255, 107, 107, 0.3);
+  
+  &:active {
+    box-shadow: 0 4rpx 10rpx rgba(255, 107, 107, 0.3);
+  }
+}
+
+.btn-secondary {
+  @extend .btn;
+  background: $color-bg-card;
+  color: $color-text;
+  border: 2rpx solid $color-border;
+}
+
+.btn-danger {
+  @extend .btn;
+  background: #fff;
+  color: $color-expense;
+  border: 2rpx solid $color-expense;
+}
+
+/* 输入框 */
+.input {
+  height: 96rpx;
+  background: $color-bg-dark;
+  border-radius: $radius-md;
+  padding: 0 $spacing-xl;
+  font-size: $font-size-base;
+  transition: all $transition-base;
+  
+  &:focus {
+    background: #fff;
+    box-shadow: 0 0 0 4rpx rgba(255, 107, 107, 0.15);
+  }
+}
+
+/* 金额样式 */
+.amount-income {
+  color: $color-income !important;
+}
+
+.amount-expense {
+  color: $color-expense !important;
+}
+
+.amount-positive {
+  color: $color-income;
+}
+
+.amount-negative {
+  color: $color-expense;
+}
+
+/* 标签 */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: $spacing-xs $spacing-sm;
+  border-radius: $radius-sm;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+  
+  &.tag-income {
+    background: rgba(82, 196, 26, 0.1);
+    color: $color-income;
+  }
+  
+  &.tag-expense {
+    background: rgba(255, 77, 79, 0.1);
+    color: $color-expense;
+  }
+}
+
+/* Flex工具类 */
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.flex-center { 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+}
+.flex-between { 
+  display: flex; 
+  align-items: center; 
+  justify-content: space-between; 
+}
+.flex-1 { flex: 1; }
+
+/* 文字工具类 */
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+.text-primary { color: $color-primary; }
+.text-secondary { color: $color-text-secondary; }
+.text-muted { color: $color-text-muted; }
+.text-sm { font-size: $font-size-sm; }
+.text-lg { font-size: $font-size-lg; }
+.text-xl { font-size: $font-size-xl; }
+.text-bold { font-weight: $font-weight-bold; }
+
+/* 通用页面容器 */
+.page-container {
+  min-height: 100vh;
+  background: $color-bg;
+  padding: $spacing-lg;
+}
+
+/* 空状态 */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-4xl * 2;
+  
+  .empty-icon {
+    font-size: 120rpx;
+    margin-bottom: $spacing-xl;
+    opacity: 0.3;
+  }
+  
+  .empty-text {
+    font-size: $font-size-base;
+    color: $color-text-muted;
+  }
+}
+
+/* 加载状态 */
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-2xl;
+  color: $color-text-muted;
+}
+
+/* 分隔线 */
+.divider {
+  height: 1rpx;
+  background: $color-border-light;
+  margin: $spacing-lg 0;
+}
+
+/* 页面标题 */
+.page-title {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-text;
+  margin-bottom: $spacing-lg;
+}
+
+/* 区块标题 */
+.section-title {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text;
+  margin-bottom: $spacing-md;
+  
+  &.muted {
+    color: $color-text-secondary;
+    font-weight: $font-weight-regular;
+  }
+}
